@@ -65,27 +65,49 @@ public class LibraryManagementSystem {
     }
     
     // Method to validate if the title and author have valid formats
-    private static boolean isValidText(String text) {
+    private static String validateText(String printMessage, Scanner scanner) {
         // Step 5: Implement validation to ensure text isn't empty
         // Hint: Check if the string is null, empty, or only whitespace
+        String text;
+    
+        while(true) {
+            System.out.println(printMessage);
 
-        if(text != null && text.isEmpty() && text.trim().equals("")) {
-            return true;
+            text = scanner.nextLine();
+
+            if(text.equalsIgnoreCase("/exit")) {
+                return null;
+            } else if(text != null && !text.isEmpty() && !(text.trim().equals("")) ) {
+                break;
+            } else {
+                System.out.println("Enter a valid text");
+            }
         }
 
-        return false; // Replace this with your implementation
+        return text; // Replace this with your implementation
     }
     
     // Method to validate publication year
-    private static boolean isValidYear(int year) {
+    private static int validateYear(String printMessage, Scanner scanner) {
         // Step 6: Implement validation for publication year
         // Hint: Check if the year is reasonable (e.g., between 1000 and current year)
-        
-        if(1000 <= year && year <= 2025) {
-            return true;
+        int year;
+
+        while(true) {
+            System.out.println(printMessage);
+
+            year = Integer.parseInt(scanner.nextLine());
+
+            if(year == 111) {
+                return 0;
+            } else if(1000 <= year && year <= 2025) {
+                break;
+            } else {
+                System.out.println("Enter a valid year");
+            }
         }
 
-        return false; // Replace this with your implementation
+        return year; // Replace this with your implementation
     }
     
     public static void main(String[] args) {
@@ -103,57 +125,78 @@ public class LibraryManagementSystem {
 
         while(continueProgram) {
 
-            System.out.println("1. Add a book" + 
-            "\n2. View all books" +
-            "\n3. Search for a book by title" +
-            "\n4. Remove a book" +
-            "\n5. View sorted books" +
-            "\nAny other key to Exit");
+            try {
+                System.out.println("1. Add a book" + 
+                "\n2. View all books" +
+                "\n3. Search for a book by title" +
+                "\n4. Remove a book" +
+                "\n5. View sorted books" +
+                "\nAny other key to Exit");
 
-            int userAction = Integer.parseInt(scanner.nextLine());
+                String userAction = scanner.nextLine();
 
-            if(userAction == 1) {
-                System.out.println("Enter the title of the book: ");
-                String title = scanner.nextLine();
+                if(userAction.equals("1")) {
+                    System.out.println("Enter the ISBN of the book: ");
+                    int ISBN = Integer.parseInt(scanner.nextLine());
 
-                System.out.println("Enter the author of the book: ");
-                String author = scanner.nextLine();
+                    String title = validateText("Enter the title of the book: ", scanner);
 
-                System.out.println("Enter the publication year of the book: ");
-                int publicationYear = Integer.parseInt(scanner.nextLine());
+                    String author = validateText("Enter the author of the book: ", scanner);
 
-                library.add(new Book(title, author, publicationYear));
-            } else if(userAction == 2) {
-                for(Book index : library) {
-                    System.out.println(index);
-                }
-            } else if(userAction == 3) {
-                System.out.println("Enter the title of the book: ");
-                String title = scanner.nextLine();
+                    String genre = validateText("Enter the genre of the book: ", scanner);
 
-                findBookByTitle(library, title);
-            } else if(userAction == 4) {
-                System.out.println("Enter the index of the book to check out: ");
-                int index = Integer.parseInt(scanner.nextLine());
+                    int publicationYear = validateYear("Enter the publication year of the book:", scanner);
 
-                if(validIndex(index, library.size())) {
-                    System.out.println(library.get(index).checkOut());
+                    library.put(ISBN, new Book(title, author, genre, publicationYear));
+
+                    System.out.println("Book added.");
+                } else if(userAction.equals("2")) {
+                    for(Map.Entry<Integer, Book> entry : library.entrySet()) {
+                        System.out.println(entry.getKey() + ", " + entry.getValue());
+                    }
+                } else if(userAction.equals("3")) {
+                    String title = validateText("Enter the title of the book to search: ", scanner);
+
+                    for(Map.Entry<Integer, Book> entry : library.entrySet()) {
+                        if(entry.getValue().getTitle().equals(title)) {
+                            System.out.println(entry.getKey() + ", " + entry.getValue());
+                        }
+                    }
+                } else if(userAction.equals("4")) {
+                    System.out.println("Enter the ISBN of the book to delete: ");
+                    int ISBN = Integer.parseInt(scanner.nextLine());
+
+                    library.remove(ISBN);
+                } else if(userAction.equals("5")) {
+                    System.out.println("Do you want to sort book by title or author?");
+                    System.out.println("1. Title" + "\n2. Author" + "\n3. Any other key to exit");
+                    int option = Integer.parseInt(scanner.nextLine());
+
+                    var orderedLibrary = new TreeMap<Integer, Book>(library);
+
+                    if(option == 1) {
+
+                        for(Map.Entry<Integer, Book> entry : orderedLibrary.entrySet()) {
+                            System.out.println(entry.getValue().getTitle() + ", " + entry.getKey() + ", " + 
+                                            entry.getValue().getAuthor() + ", " + entry.getValue().getPublicationYear() + ", " +
+                                            entry.getValue().getPublicationYear());
+                        }
+                    } else if(option == 2) {
+
+                        for(Map.Entry<Integer, Book> entry : orderedLibrary.entrySet()) {
+                            System.out.println(entry.getValue().getAuthor() + ", " + entry.getKey() + ", " + 
+                                            entry.getValue().getTitle() + ", " + entry.getValue().getPublicationYear() + ", " +
+                                            entry.getValue().getPublicationYear());
+                        }
+                    }
                 } else {
-                    System.out.println("No such index was found");
+                    continueProgram = false;
                 }
-            } else if(userAction == 5) {
-                System.out.println("Enter the index of the book to return: ");
-                int index = Integer.parseInt(scanner.nextLine());
-
-                if(validIndex(index, library.size())) {
-                    System.out.println(library.get(index).returnBook());
-                } else {
-                    System.out.println("No such index was found");
-                }
-            } else {
-                continueProgram = false;
+            } catch(NumberFormatException nfe) {
+                System.out.println("Enter a valid number");
+            } catch(ArrayIndexOutOfBoundsException iobe) {
+                System.out.println("Enter a valid index");
             }
-
         }
         
         // Step 10: Implement the "Add a book" option
