@@ -1,9 +1,9 @@
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
-import java.util.Scanner;
+import java.time.LocalDate; // permite usar objetos tipo LocalDate para manejar fechas
+import java.time.format.DateTimeFormatter; // permite usar objetos Formatter para formatear string a DateTime objects
+import java.time.format.DateTimeParseException; // excepcion lanzada debido a un error convirtiendo un String a DateTime
+import java.time.Period; // permite saber el intervalo de timpo entre dos objetos date
+import java.time.temporal.ChronoUnit; // Clase enum que contiene constantes para dias de la semana entre otras
+import java.util.Scanner; // permite la entrada del usuario
 
 /**
  * TravelPlanner - A utility to help travelers plan their trips
@@ -17,6 +17,9 @@ public class TravelPlanner {
     
     // Step 1: Declare a DateTimeFormatter for the standard date format "dd/MM/yyyy"
     // Hint: Use DateTimeFormatter.ofPattern()
+
+    String pattern = "dd/MM/yyyy";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
     
     /**
      * Calculates the duration of a trip in days
@@ -27,7 +30,9 @@ public class TravelPlanner {
     public static long calculateTripDuration(LocalDate departureDate, LocalDate returnDate) {
         // Step 2: Calculate and return the number of days between departure and return dates
         // Hint: Use ChronoUnit.DAYS.between()
-        return 0; // Replace with actual calculation
+        long tripDuration = ChronoUnit.DAYS.between(departureDate, returnDate);
+
+        return tripDuration; // Replace with actual calculation
     }
     
     /**
@@ -42,8 +47,15 @@ public class TravelPlanner {
         // - Return date should be after departure date
         // - Trip should not be longer than 90 days
         // Hint: Use LocalDate.now() for current date and various comparison methods
+        if(departureDate.isBefore(LocalDate.now()) || returnDate.isBefore(departureDate)) {
+            return false;
+        }
+
+        if(calculateTripDuration(departureDate, returnDate) > 90) {
+            return false;
+        } 
         
-        return false; // Replace with actual validation
+        return true; // Replace with actual validation
     }
     
     /**
@@ -57,8 +69,9 @@ public class TravelPlanner {
         // - Check-in is usually the same day as departure
         // - Check-out is usually the same day as return
         // Hint: Format the dates using the formatter declared in Step 1
+        String dates = "Cheack-in date: " + departureDate.format(departureDate) + "\nCheack-out date: " + departureDate.format(returnDate);
         
-        return ""; // Replace with actual calculation
+        return dates; // Replace with actual calculation
     }
     
     /**
@@ -71,8 +84,11 @@ public class TravelPlanner {
     public static boolean tripOverlapsHoliday(LocalDate departureDate, LocalDate returnDate, LocalDate holidayDate) {
         // Step 5: Check if the holiday date falls between departure and return dates
         // Hint: Use isAfter() and isBefore() methods or similar
+        if(holidayDate.isAfter(departureDate) || holidayDate.isBefore(returnDate)) {
+            return false;
+        }
         
-        return false; // Replace with actual check
+        return true; // Replace with actual check
     }
     
     /**
@@ -92,6 +108,67 @@ public class TravelPlanner {
         // Hint: Catch DateTimeParseException for invalid date formats
         
         // Step 8: Display appropriate messages to the user based on the operations performed
+
+        LocalDate departureDate;
+        LocalDate returnDate;
+
+        boolean datesCreated = false;
+
+        System.out.println("Welcome to TravelPlanner application!");
+        System.out.println("What do you want to do?");
+
+        while(true) {
+
+            System.out.println("1. New departure and return dates" + "\n2. Calculate trip duration" + "\n3. Validate travel dates" +
+                                "\n4. Calculate hotel check-in and check-out dates" + "\n5. Check if trip overlaps with holidays" +
+                                "\n6. Exit the program");
+
+            String userOption = scanner.nextLine();
+
+            if(userOption.equals("1")) {
+                System.out.println("Enter the departure date with pattern: " + pattern);
+                String departureDateStr = scanner.nextLine();
+
+                System.out.println("Enter the return date with pattern: " + pattern);
+                String returnDateStr = scanner.nextLine();
+
+                try {
+                    departureDate = LocalDate.parse(departureDateStr, formatter);
+                    returnDate = LocalDate.parse(returnDateStr, formatter);
+                } catch(DateTimeParseException dfpe) {
+                    System.out.println("Enter a valid date");
+                    continue;
+                }
+
+                datesCreated = true;
+
+            } else if(datesCreated) { 
+                else if(userOption.equals("2")) {
+                System.out.println("Trip duration is " + calculateTripDuration(departureDate, returnDate) + " days(s).");
+                } else if(userOption.equals("3")) {
+                    if(validateTravelDates(departureDate, returnDate)) {
+                        System.out.println("Dates are valid");
+                    } else {
+                        System.out.println("Dates are invalid");
+                    }
+                } else if(userOption.equals("4")) {
+                    calculateHotelDates(departureDate, returnDate);
+                } else if(userOption.equals("5")) {
+                    if(tripOverlapsHoliday(departureDate, returnDate)) {
+                        System.out.println("Trip overlaps holiday");
+                    } else {
+                        System.out.println("Trip does not overlap holiday");
+                    }
+                } else if(userOption.equals("6")) {
+                    System.out.println("Closing program...");
+                    break;
+                } else {
+                    System.out.println("Enter a valid option");
+                }
+            } else {
+                System.out.println("To do other actions first you need to enter travel dates");
+            }
+        }
         
         scanner.close();
     }
