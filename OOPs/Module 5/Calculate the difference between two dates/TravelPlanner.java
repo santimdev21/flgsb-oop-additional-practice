@@ -18,8 +18,8 @@ public class TravelPlanner {
     // Step 1: Declare a DateTimeFormatter for the standard date format "dd/MM/yyyy"
     // Hint: Use DateTimeFormatter.ofPattern()
 
-    String pattern = "dd/MM/yyyy";
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+    static String pattern = "dd/MM/yyyy";
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
     
     /**
      * Calculates the duration of a trip in days
@@ -69,7 +69,7 @@ public class TravelPlanner {
         // - Check-in is usually the same day as departure
         // - Check-out is usually the same day as return
         // Hint: Format the dates using the formatter declared in Step 1
-        String dates = "Cheack-in date: " + departureDate.format(departureDate) + "\nCheack-out date: " + departureDate.format(returnDate);
+        String dates = "Cheack-in date: " + departureDate.format(formatter) + "\nCheack-out date: " + returnDate.format(formatter);
         
         return dates; // Replace with actual calculation
     }
@@ -84,11 +84,11 @@ public class TravelPlanner {
     public static boolean tripOverlapsHoliday(LocalDate departureDate, LocalDate returnDate, LocalDate holidayDate) {
         // Step 5: Check if the holiday date falls between departure and return dates
         // Hint: Use isAfter() and isBefore() methods or similar
-        if(holidayDate.isAfter(departureDate) || holidayDate.isBefore(returnDate)) {
-            return false;
+        if((holidayDate.isAfter(departureDate) && holidayDate.isBefore(returnDate)) && (!holidayDate.isEqual(departureDate)  !holidayDate.isEqual(returnDate)) ) {
+            return true;
         }
         
-        return true; // Replace with actual check
+        return false; // Replace with actual check
     }
     
     /**
@@ -108,9 +108,9 @@ public class TravelPlanner {
         // Hint: Catch DateTimeParseException for invalid date formats
         
         // Step 8: Display appropriate messages to the user based on the operations performed
-
-        LocalDate departureDate;
-        LocalDate returnDate;
+        
+        LocalDate departureDate = LocalDate.now();
+        LocalDate returnDate = LocalDate.now();
 
         boolean datesCreated = false;
 
@@ -136,14 +136,15 @@ public class TravelPlanner {
                     departureDate = LocalDate.parse(departureDateStr, formatter);
                     returnDate = LocalDate.parse(returnDateStr, formatter);
                 } catch(DateTimeParseException dfpe) {
-                    System.out.println("Enter a valid date");
+                    System.out.println("Error: enter a valid date");
                     continue;
                 }
 
+                System.out.println("Dates created succesfully!");
                 datesCreated = true;
 
             } else if(datesCreated) { 
-                else if(userOption.equals("2")) {
+                if(userOption.equals("2")) {
                 System.out.println("Trip duration is " + calculateTripDuration(departureDate, returnDate) + " days(s).");
                 } else if(userOption.equals("3")) {
                     if(validateTravelDates(departureDate, returnDate)) {
@@ -152,12 +153,21 @@ public class TravelPlanner {
                         System.out.println("Dates are invalid");
                     }
                 } else if(userOption.equals("4")) {
-                    calculateHotelDates(departureDate, returnDate);
+                    System.out.println(calculateHotelDates(departureDate, returnDate));
                 } else if(userOption.equals("5")) {
-                    if(tripOverlapsHoliday(departureDate, returnDate)) {
-                        System.out.println("Trip overlaps holiday");
-                    } else {
-                        System.out.println("Trip does not overlap holiday");
+                    try {
+                        System.out.println("Enter the holiday date with pattern: " + pattern);
+                        String holidayDateStr = scanner.nextLine();
+
+                        LocalDate holidayDate = LocalDate.parse(holidayDateStr, formatter);
+
+                        if(tripOverlapsHoliday(departureDate, returnDate, holidayDate)) {
+                            System.out.println("Trip overlaps holiday");
+                        } else {
+                            System.out.println("Trip does not overlap holiday");
+                        }
+                    } catch(DateTimeParseException dfpe) {
+                        System.out.println("Enter a valid date");
                     }
                 } else if(userOption.equals("6")) {
                     System.out.println("Closing program...");
