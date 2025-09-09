@@ -69,17 +69,61 @@ public class EventScheduler {
         // Create a ZonedDateTime from LocalDateTime and ZoneId
         // Create a Duration object from hours and minutes
         // Create a new Event object and add it to the events list
-        System.out.println("Enter the event name");
-        String name = scanner.nextLine();
+        String pattern = "dd/MM/yyyy hh:mm:ss";
+        
+        try {
+            System.out.println("Enter the event name");
+            String name = scanner.nextLine();
 
-        System.out.println("Enter the event date");
-        String date = scanner.nextLine();
+            System.out.println("Enter the event date and time in format: " + pattern);
+            String dateTimeStr = scanner.nextLine();
+
+            System.out.println("Enter the timezone");
+            String timezone = scanner.nextLine();
+
+            System.out.println("Enter the event duration in hours and minutes");
+            System.out.println("Hours: ");
+            long hours = Long.parseLong(scanner.nextLine());
+
+            System.out.println("Minutes: ");
+            long minutes = Long.parseLong(scanner.nextLine());
+
+
+            LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, pattern);
+
+            ZoneId zone = ZoneId.of(timezone);
+
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, zone);
+
+            Duration duration = Duration.ofHours(hours);
+            duration.plusMinutes(minutes);
+
+            Event event = new Event(name, zonedDateTime, duration);
+            this.events.add(event);
+
+        } catch (DateTimeParseException dtpe) {
+            System.out.println("Error: enter a valid date and time");
+        } catch (NumberFormatException nfe) {
+            System.out.println("Error: enter a valid duration");
+        } catch (DateTimeException dte) {
+            System.out.println("Error: enter a valid timezone");
+        } catch (ArithmeticException ae) {
+            System.out.println(at.getMessage());
+        } 
+        
+        
     }
     
     private void displayAllEvents() {
         // Step 11: Implement method to display all events
         // Hint: Get format pattern from user
         // Loop through events list and display each event with the specified format
+        System.out.println("Enter the format in which you want to display the events:");
+        String formatter = scanner.nextLine();
+
+        for(Event event : events) {
+            System.out.println(event);
+        }
     }
     
     private void showTimeUntilEvent() {
@@ -87,6 +131,21 @@ public class EventScheduler {
         // Hint: Show list of events with numbers
         // Get event selection from user
         // Calculate and display time until the selected event
+        try {
+            for(int i = 0; i < events.length; i++) {
+                    System.out.println(i+1 + "- " + events.get(i));
+                }
+
+            System.out.println("Enter the index of the event to display:");
+            int index = Integer.parseInt(scanner.nextLine());
+
+            Duration duration = events.get(index).timeRemaining();
+            System.out.println("Time until event: " + duration.toDays() + " day(s) " + duration.toHours + " hour(s) " + duration.toMinutes() + " minute(s)");
+        } catch(IndexOutOfBoundsException iobe) {
+            System.out.println("Error: index not found");
+        } catch (NumberFormatException nfe) {
+            System.out.println("Error: invalid index");
+        }
     }
     
     private void convertEventTime() {
@@ -95,6 +154,23 @@ public class EventScheduler {
         // Get event selection from user
         // Get target timezone from user
         // Convert and display event time in the target timezone
+        try {
+            for(int i = 0; i < events.length; i++) {
+                    System.out.println(i+1 + "- " + events.get(i));
+                }
+
+            System.out.println("Enter the index of the event to convert timezone:");
+            int index = Integer.parseInt(scanner.nextLine());
+
+            System.out.println("Enter the new timezone");
+            String timezoneId = scanner.nextLine();
+
+            events.get(index).changeTimeZone(timezoneId);
+        } catch(IndexOutOfBoundsException iobe) {
+            System.out.println("Error: index not found");
+        } catch (NumberFormatException nfe) {
+            System.out.println("Error: invalid index");
+        }
     }
     
     private void findUpcomingEvents() {

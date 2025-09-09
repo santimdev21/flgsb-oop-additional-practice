@@ -9,6 +9,7 @@ public class Event {
     private String name;
     private ZonedDateTime dateTime;
     private Duration duration;
+    private String timezone;
     
     // Step 2: Create a constructor to initialize these variables
     // Hint: public Event(String name, ZonedDateTime dateTime, Duration duration)
@@ -49,6 +50,7 @@ public class Event {
     public void changeTimeZone(String timezoneId) {
         try {
             dateTime.withZoneSameInstant(ZoneId.of(timezoneId));
+            System.out.println(dateTime.format("dd/MM/yy hh:mm:ss") + " " + timezoneId + " timezone");
         } catch(DateTimeException dte) {
             System.out.println("Unable to change time zone: " + timezoneId);
         }
