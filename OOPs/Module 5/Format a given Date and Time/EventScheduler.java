@@ -38,18 +38,23 @@ public class EventScheduler {
             switch (choice) {
                 case 1:
                     // Call method to add event
+                    addEvent();
                     break;
                 case 2:
                     // Call method to display all events
+                    displayAllEvents();
                     break;
                 case 3:
                     // Call method to show time until event
+                    showTimeUntilEvent();
                     break;
                 case 4:
                     // Call method to convert event time
+                    convertEventTime();
                     break;
                 case 5:
                     // Call method to find upcoming events
+                    findUpcomingEvents();
                     break;
                 case 6:
                     running = false;
