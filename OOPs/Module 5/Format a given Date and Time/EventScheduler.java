@@ -177,6 +177,18 @@ public class EventScheduler {
         // Step 14: Implement method to find events within a specific number of days
         // Hint: Get number of days from user
         // Loop through events and display those within the specified days
+        try {
+            System.out.println("Enter the number of days target:");
+            int days = Long.parseLong(scanner.nextLine());
+
+            for(Event event : events) {
+                if(event.timeRemaining().toDays() <= days) {
+                    System.out.println(events.get(i));
+                }
+            }
+        } catch (NumberFormatException nfe) {
+            System.out.println("Error: invalid index");
+        }
     }
     
     public static void main(String[] args) {
