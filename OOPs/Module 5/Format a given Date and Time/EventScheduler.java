@@ -15,6 +15,8 @@ public class EventScheduler {
     
     public EventScheduler() {
         // Step 7: Initialize the events list and scanner
+        this.events = new ArrayList<Event>();
+        this.scanner = new Scanner(System.in);
     }
     
     public void run() {
@@ -67,6 +69,11 @@ public class EventScheduler {
         // Create a ZonedDateTime from LocalDateTime and ZoneId
         // Create a Duration object from hours and minutes
         // Create a new Event object and add it to the events list
+        System.out.println("Enter the event name");
+        String name = scanner.nextLine();
+
+        System.out.println("Enter the event date");
+        String date = scanner.nextLine();
     }
     
     private void displayAllEvents() {
